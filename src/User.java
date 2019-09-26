@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-public class User extends Thread
+public class User implements Runnable
 {
     private Semaphore sem;
     private Random r = new Random();
@@ -10,7 +10,7 @@ public class User extends Thread
 
     public User(Semaphore sem, Website w, String threadName)
     {
-        super(threadName);
+//        super(threadName);
         this.sem = sem;
         this.w = w;
         this.threadName = threadName;
@@ -24,35 +24,30 @@ public class User extends Thread
         //sleep allows users calls to spread out
         try
         {
-            sleep(r.nextInt(10000) + 500);
+            Thread.sleep(r.nextInt(10000) + 500);
         } catch (InterruptedException e)
         {
             System.out.println(e);
         }
 
-        try
-        {
-            System.out.println(threadName + " is waiting for a mirror." + " at " + Main.getTime());
 
-            //Requests access to mirrors. If no mirrors available thread waits until another user releases their mirror
-            sem.acquire();
-            //once a mirror is available user grabs it
-            Mirror m = w.getMirror();
-            System.out.println(threadName + " gets mirror " + m.getName() + " at " + Main.getTime());
+        System.out.println(threadName + " is waiting for a mirror." + " at " + Main.getTime());
 
-            //calls download on mirror to get data
-            String download = m.download();
-            System.out.println(threadName + " downloaded " + download + " at " + Main.getTime());
+        //Requests access to mirrors. If no mirrors available thread waits until another user releases their mirror
+//            sem.acquire();
+        //once a mirror is available user grabs it
+        Mirror m = w.getMirror();
+        System.out.println(threadName + " gets mirror " + m.getName() + " at " + Main.getTime());
 
-            //after data is downloaded, the user returns the mirror to the website
-            w.returnMirror(m);
-            System.out.println(threadName + " releases mirror " + m.getName() + " at " + Main.getTime());
+        //calls download on mirror to get data
+        String download = m.download();
+        System.out.println(threadName + " downloaded " + download + " at " + Main.getTime());
 
-        } catch (InterruptedException e)
-        {
-            System.out.println(e);
-        }
+        //after data is downloaded, the user returns the mirror to the website
+        w.returnMirror(m);
+        System.out.println(threadName + " releases mirror " + m.getName() + " at " + Main.getTime());
+
         //notifies sem that user is done with mirror
-        sem.release();
+//        sem.release();
     }
 }

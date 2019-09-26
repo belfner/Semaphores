@@ -26,6 +26,13 @@ public class Website
     //pops the first mirror from available mirrors adds it to the mirrors in ues list and returns it to the user
     public Mirror getMirror()
     {
+        try
+        {
+            sem.acquire();
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
         mirrorsInUse.add(availableMirrors.get(0));
         return availableMirrors.remove(0);
     }
@@ -36,5 +43,6 @@ public class Website
     {
         mirrorsInUse.remove(m);
         availableMirrors.add(m);
+        sem.release();
     }
 }

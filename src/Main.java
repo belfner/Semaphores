@@ -25,10 +25,10 @@ public class Main
         Semaphore sem = new Semaphore(numberOfMirrors, true);
 
         //Create all Users
-        User[] users = new User[numberOfUsers];
+        Thread[] users = new Thread[numberOfUsers];
         for (int x = 0; x < numberOfUsers; x++)
         {
-            users[x] = new User(sem, w, randomString(4));
+            users[x] = new Thread(new User(sem, w, randomString(4)));
         }
         startTime = System.currentTimeMillis();
         //Start all users
@@ -42,7 +42,6 @@ public class Main
         {
             users[x].join();
         }
-
     }
 
     //generate random string for the users name
@@ -58,7 +57,6 @@ public class Main
         String generatedString = new String(array, Charset.forName("UTF-8"));
         return generatedString.substring(0, 1).toUpperCase() + generatedString.substring(1);
     }
-
     //returns time elapsed since program start in a formatted string
     public static String getTime()
     {
